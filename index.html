@@ -25,6 +25,12 @@
         margin-bottom: 20px; 
     }
 
+    #input-area p { 
+        margin: 20px auto; 
+        width: 80%;
+        font-size: 14px;
+    }
+
     #result { 
         font-weight: bold; 
         margin-top: 10px; 
@@ -90,6 +96,7 @@
   <div id="emoji">👦💖</div>
 
   <div id="input-area">
+    <p>Some of the emojis translate directly to song names, while others requires you to guess based on details in the music video, lyrics or anything else that comes to your mind.</p>
     <input type="text" id="guess" placeholder="Enter song name" /> <br>
     <button id="submit" onclick="checkAnswer()">Submit</button>
   </div>

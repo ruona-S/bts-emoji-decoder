@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BTS Emoji Quiz</title>
+  <style>
+    body { 
+        font-family: sans-serif; 
+        text-align: center; 
+        margin-top: 50px; 
+        background: linear-gradient(to bottom, #DDA0DD, #EE82EE);
+        height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .title {
+        color: #800080;
+        font-size: 32px;
+        font-weight: 700;
+    }
+
+    #emoji { 
+        font-size: 3em; 
+        margin-bottom: 20px; 
+    }
+
+    #result { 
+        font-weight: bold; 
+        margin-top: 10px; 
+        color: #800080;
+        font-size: 22px;
+    }
+
+    #score-area {
+        color: #800080;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    #guess {
+        padding: 10px;
+        width: 90%;
+        max-width: 500px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        background: white;
+        border: solid 2px #d05fad;
+        outline-color: #800080;
+    }
+
+    button {
+        padding: 10px;
+        width: 200px;
+        cursor: pointer;
+    }
+
+    #submit {
+        border-radius: 10px;
+        background: #d05fad;
+        border: solid 2px #d05fad;
+        color: #fff;
+        font-size: 22px;
+    }
+
+    #submit:hover {
+        border: solid 2px #800080;
+    }
+    
+    #next {
+        border: none;
+        background: transparent;
+        color: #800080;
+        font-size: 20px;
+        animation: bounce 1s infinite;
+        transition: opacity 0.3s ease;
+        font-weight: 900;
+    }
+
+
+    @keyframes bounce {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(5px); }
+    }
+
+ </style>
+</head>
+<body>
+
+  <h1 class="title">Guess the BTS song</h1>
+  <div id="emoji">👦💖</div>
+
+  <div id="input-area">
+    <input type="text" id="guess" placeholder="Enter song name" /> <br>
+    <button id="submit" onclick="checkAnswer()">Submit</button>
+  </div>
+  <div id="result"></div>
+  <br>
+  <button id="next" onclick="nextQuestion()">Next &#x2192;</button>
+
+  <div id="score-area">
+    <p>Score: <span id="score">0</span> / <span id="total">0</span></p>
+  </div>
+
+  <script>
+    const quiz = [
+        { emoji: "👦💖", answer: "boy with luv" },
+        { emoji: "🧬", answer: "dna" },
+        { emoji: "🔥", answer: "fire" },
+        { emoji: "💥🍭", answer: "dynamite" },
+        { emoji: "🧈", answer: "butter" },
+        { emoji: "🌸❄️", answer: "spring day" },
+        { emoji: "🩸💦😭", answer: "blood sweat and tears" },
+        { emoji: "🎤⬇️", answer: "mic drop" },
+        { emoji: "🆘🙋‍♂️", answer: "save me" },
+        { emoji: "💔🎭", answer: "fake love" },
+        { emoji: "🏃‍♂️💨", answer: "run" },
+        { emoji: "❌📅", answer: "not today" },
+        { emoji: "🖤🦢", answer: "black swan" },
+        { emoji: "🌍➡️⏩", answer: "life goes on" },
+        { emoji: "❌💭", answer: "no more dream" },
+        { emoji: "🕺🔥", answer: "dope" },
+        { emoji: "✅🕺", answer: "permission to dance" },
+        { emoji: "👑🎤", answer: "idol" },
+        { emoji: "😊🌈", answer: "euphoria" },
+        { emoji: "🙏❤️", answer: "i need u" },
+        { emoji: "🔵⚫️☁️", answer: "blue & grey" },
+        { emoji: "🧑‍🎤🐀🎶", answer: "pied piper" },
+        { emoji: "🔧✅", answer: "make it right" },
+        { emoji: "🍞🦸‍♂️", answer: "anpanman" },
+        { emoji: "🛡️♾️", answer: "we are bulletproof: the eternal" },
+        { emoji: "🦋", answer: "butterfly" },
+        { emoji: "🛏️✨", answer: "stay gold" },
+        { emoji: "👶♾️", answer: "young forever" },
+        { emoji: "🧠❓", answer: "intro: persona" },
+        { emoji: "✨💫", answer: "serendipity" },
+        { emoji: "❤️🌀", answer: "love maze" },
+        { emoji: "✨🛍️", answer: "magic shop" },
+        { emoji: "🌅➡️", answer: "tomorrow" },
+        { emoji: "🌊", answer: "sea" },
+        { emoji: "🏝️🌈", answer: "paradise" },
+        { emoji: "🐋🔊", answer: "whalien 52" },
+        { emoji: "🌌❤️", answer: "my universe" },
+        { emoji: "✋💨", answer: "let go" },
+        { emoji: "💡😌", answer: "epiphany" },
+        { emoji: "🤐🩹", answer: "stigma" },
+        { emoji: "😵‍💫🔔", answer: "awake" },
+        { emoji: "🚪😭", answer: "outro: tear" },
+        { emoji: "😶‍🌫️🔪", answer: "lie" },
+        { emoji: "👦❤️‍🔥", answer: "boy in luv" },
+        { emoji: "🥁🚶‍♂️", answer: "on" },
+        { emoji: "⏳👤", answer: "still with you" },
+        { emoji: "👶🎤", answer: "born singer" },
+        { emoji: "🧭❌", answer: "lost" },
+        { emoji: "🏠🃏", answer: "house of cards" },
+        { emoji: "🚗😎", answer: "outro: ego" }
+    ];
+
+
+    let remaining = [...quiz]; // Clone of quiz for random selection
+    let currentQuestion = {};
+    let score = 0;
+    let total = quiz.length;
+
+    document.getElementById("total").innerText = total;
+
+    function getRandomQuestion() {
+      const randomIndex = Math.floor(Math.random() * remaining.length);
+      return remaining.splice(randomIndex, 1)[0]; // Remove and return
+    }
+
+    function displayQuestion() {
+      if (remaining.length === 0) {
+        showFinalScore();
+        return;
+      }
+
+      currentQuestion = getRandomQuestion();
+      document.getElementById("emoji").innerText = currentQuestion.emoji;
+      document.getElementById("guess").value = "";
+      document.getElementById("result").innerText = "";
+
+      document.getElementById("input-area").style.display = "inline";
+    }
+
+    function checkAnswer() {
+      const userGuess = document.getElementById("guess").value.trim().toLowerCase();
+      const correct = currentQuestion.answer.toLowerCase();
+
+      if (userGuess === correct) {
+        document.getElementById("result").innerText = "Correct!";
+        score++;
+        document.getElementById("score").innerText = score;
+      } else {
+        document.getElementById("result").innerText = `Wrong Answer: ${currentQuestion.answer}`;
+      }
+
+      document.getElementById("input-area").style.display = "none";
+    }
+
+    function nextQuestion() {
+      displayQuestion();
+    }
+
+    function showFinalScore() {
+      document.getElementById("emoji").innerText = "Quiz complete!";
+      document.getElementById("input-area").style.display = "none";
+      document.getElementById("next").style.display = "none";
+  
+      let face = "😢";
+      if (score > 6) face = "😊";
+      else if (score > 4) face = "😐";
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.classList.add("final-score");
+      resultDiv.innerText = `Your final score: ${score} / ${total} ${face}`;
+
+      document.getElementById("score-area").style.display = "none";
+    }
+
+    // Start game
+    displayQuestion();
+  </script>
+
+</body>
+</html>

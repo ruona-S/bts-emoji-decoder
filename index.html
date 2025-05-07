@@ -195,9 +195,17 @@
       document.getElementById("input-area").style.display = "inline";
     }
 
+    function normalize(text) {
+      return text
+        .toLowerCase()
+        .replace(/&/g, "and")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
     function checkAnswer() {
-      const userGuess = document.getElementById("guess").value.trim().toLowerCase();
-      const correct = currentQuestion.answer.toLowerCase();
+      const userGuess = normalize(document.getElementById("guess").value);
+      const correct = normalize(currentQuestion.answer);
 
       if (userGuess === correct) {
         document.getElementById("result").innerText = "Correct!";
